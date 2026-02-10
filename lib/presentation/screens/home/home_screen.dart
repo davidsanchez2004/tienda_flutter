@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/core/config/app_config.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
 import 'package:by_arena/presentation/widgets/product_card.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
+
+IconData _categoryIcon(String slug) {
+  switch (slug) {
+    case 'bolsos':
+      return Icons.shopping_bag_outlined;
+    case 'collares':
+      return Icons.auto_awesome_outlined;
+    case 'pendientes':
+      return Icons.diamond_outlined;
+    case 'pulseras':
+      return Icons.watch_outlined;
+    case 'perfumes':
+      return Icons.spa_outlined;
+    case 'anillos':
+      return Icons.circle_outlined;
+    default:
+      return Icons.star_outline_rounded;
+  }
+}
 
 
 class HomeScreen extends ConsumerWidget {
@@ -110,18 +128,26 @@ class HomeScreen extends ConsumerWidget {
                                   width: 60,
                                   height: 60,
                                   decoration: BoxDecoration(
-                                    color: AppColors.arenaPale,
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [AppColors.arenaPale, Color(0xFFF0E6D8)],
+                                    ),
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: AppColors.arenaLight),
+                                    border: Border.all(color: AppColors.arenaLight, width: 1.5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.arena.withOpacity(0.08),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                  child: cat.imageUrl != null
-                                      ? ClipOval(
-                                          child: CachedNetworkImage(
-                                            imageUrl: cat.imageUrl!,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )
-                                      : const Icon(Icons.category, color: AppColors.arena),
+                                  child: Icon(
+                                    _categoryIcon(cat.slug ?? cat.name.toLowerCase()),
+                                    color: AppColors.gold,
+                                    size: 26,
+                                  ),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
@@ -223,7 +249,7 @@ class HomeScreen extends ConsumerWidget {
                       _QuickAction(
                         icon: Icons.headset_mic_outlined,
                         label: 'Contacto',
-                        onTap: () {}, // TODO: contact
+                        onTap: () => context.push('/contacto'),
                       ),
                     ],
                   ),

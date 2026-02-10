@@ -3,10 +3,13 @@ import 'package:by_arena/data/repositories/product_repository.dart';
 import 'package:by_arena/domain/models/product.dart';
 import 'package:by_arena/domain/models/category.dart';
 
-// Featured products
+// Featured products (falls back to recent products if none are featured)
 final featuredProductsProvider = FutureProvider<List<Product>>((ref) async {
   final repo = ref.read(productRepositoryProvider);
-  return repo.getProducts(featured: true, limit: 10);
+  final featured = await repo.getProducts(featured: true, limit: 10);
+  if (featured.isNotEmpty) return featured;
+  // Fallback: show most recent products
+  return repo.getProducts(limit: 10);
 });
 
 // All products (with optional category filter)

@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
+import 'package:by_arena/data/repositories/product_repository.dart';
 import 'package:by_arena/presentation/widgets/product_card.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
 
 final offersProvider = FutureProvider<List>((ref) async {
-  final repo = ref.watch(productRepositoryProvider);
-  return repo.getProducts(oferta: true);
+  final repo = ref.read(productRepositoryProvider);
+  // Temporalmente, mostrar productos destacados como ofertas
+  return repo.getProducts(featured: true, limit: 100);
 });
 
 class OffersScreen extends ConsumerWidget {

@@ -1,3 +1,5 @@
+import 'package:by_arena/core/config/app_config.dart';
+
 class Product {
   final String id;
   final String name;
@@ -50,8 +52,8 @@ class Product {
       description: json['description'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       stock: json['stock'] ?? 0,
-      imageUrl: json['image_url'] ?? '',
-      imagesUrls: List<String>.from(json['images_urls'] ?? []),
+      imageUrl: AppConfig.resolveImageUrl(json['image_url'] ?? ''),
+      imagesUrls: (json['images_urls'] as List? ?? []).map((u) => AppConfig.resolveImageUrl(u)).toList(),
       categoryIds: List<String>.from(json['category_ids'] ?? []),
       sku: json['sku'],
       featured: json['featured'] ?? false,
