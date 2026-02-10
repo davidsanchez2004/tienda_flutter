@@ -90,12 +90,6 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push('/mis-pedidos'),
                   ),
                   _ProfileTile(
-                    icon: Icons.favorite_border,
-                    title: 'Favoritos',
-                    subtitle: 'Productos que te gustan',
-                    onTap: () => context.push('/favoritos'),
-                  ),
-                  _ProfileTile(
                     icon: Icons.local_shipping_outlined,
                     title: 'Rastrear Pedido',
                     subtitle: 'Sigue el estado de tu envío',
@@ -248,7 +242,7 @@ class ProfileScreen extends ConsumerWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               const Text(
-                'Inicia sesión para gestionar tus pedidos, favoritos y más',
+                'Inicia sesión para gestionar tus pedidos y más',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.textSecondary),
               ),

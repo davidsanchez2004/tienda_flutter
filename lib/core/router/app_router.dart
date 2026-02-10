@@ -17,7 +17,6 @@ import 'package:by_arena/presentation/screens/auth/login_screen.dart';
 import 'package:by_arena/presentation/screens/auth/register_screen.dart';
 import 'package:by_arena/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:by_arena/presentation/screens/search/search_screen.dart';
-import 'package:by_arena/presentation/screens/wishlist/wishlist_screen.dart';
 import 'package:by_arena/presentation/screens/offers/offers_screen.dart';
 import 'package:by_arena/presentation/screens/blog/blog_list_screen.dart';
 import 'package:by_arena/presentation/screens/blog/blog_detail_screen.dart';
@@ -127,11 +126,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/buscar',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SearchScreen(),
-      ),
-      GoRoute(
-        path: '/favoritos',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const WishlistScreen(),
       ),
       GoRoute(
         path: '/ofertas',

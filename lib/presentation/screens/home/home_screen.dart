@@ -48,10 +48,6 @@ class HomeScreen extends ConsumerWidget {
                 icon: const Icon(Icons.search),
                 onPressed: () => context.push('/buscar'),
               ),
-              IconButton(
-                icon: const Icon(Icons.favorite_border),
-                onPressed: () => context.push('/favoritos'),
-              ),
             ],
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
