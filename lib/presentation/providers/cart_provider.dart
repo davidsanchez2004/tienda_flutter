@@ -1,9 +1,34 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:by_arena/domain/models/cart_item.dart';
 import 'package:by_arena/core/config/app_config.dart';
 
 class CartNotifier extends StateNotifier<List<CartItem>> {
-  CartNotifier() : super([]);
+  CartNotifier() : super([]) {
+    _loadFromStorage();
+  }
+
+  static const _storageKey = 'cart_items';
+
+  Future<void> _loadFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = prefs.getString(_storageKey);
+      if (json != null) {
+        final list = jsonDecode(json) as List;
+        state = list.map((e) => CartItem.fromJson(e)).toList();
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _saveToStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = jsonEncode(state.map((e) => e.toJson()).toList());
+      await prefs.setString(_storageKey, json);
+    } catch (_) {}
+  }
 
   double get subtotal => state.fold(0, (sum, item) => sum + item.total);
   int get itemCount => state.fold(0, (sum, item) => sum + item.quantity);
@@ -20,10 +45,12 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     } else {
       state = [...state, item];
     }
+    _saveToStorage();
   }
 
   void removeItem(String productId) {
     state = state.where((item) => item.productId != productId).toList();
+    _saveToStorage();
   }
 
   void updateQuantity(String productId, int quantity) {
@@ -34,11 +61,13 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     final index = state.indexWhere((i) => i.productId == productId);
     if (index >= 0) {
       state = [...state]..[index] = state[index].copyWith(quantity: quantity);
+      _saveToStorage();
     }
   }
 
   void clear() {
     state = [];
+    _saveToStorage();
   }
 
   List<Map<String, dynamic>> toApiItems() {

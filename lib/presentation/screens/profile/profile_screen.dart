@@ -101,6 +101,36 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: 'Sigue el estado de tu envío',
                     onTap: () => context.push('/rastreo'),
                   ),
+                  _ProfileTile(
+                    icon: Icons.location_on_outlined,
+                    title: 'Mis Direcciones',
+                    subtitle: 'Gestiona tus direcciones de envío',
+                    onTap: () => context.push('/mis-direcciones'),
+                  ),
+                  _ProfileTile(
+                    icon: Icons.local_offer_outlined,
+                    title: 'Ofertas',
+                    subtitle: 'Productos en oferta',
+                    onTap: () => context.push('/ofertas'),
+                  ),
+
+                  const SizedBox(height: 24),
+                  const Text('Información',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 12),
+
+                  _ProfileTile(
+                    icon: Icons.article_outlined,
+                    title: 'Blog',
+                    subtitle: 'Novedades y artículos',
+                    onTap: () => context.push('/blog'),
+                  ),
+                  _ProfileTile(
+                    icon: Icons.info_outline,
+                    title: 'Sobre Nosotros',
+                    subtitle: 'Conoce BY ARENA',
+                    onTap: () => context.push('/sobre-nosotros'),
+                  ),
 
                   const SizedBox(height: 24),
                   const Text('Soporte',
@@ -111,13 +141,13 @@ class ProfileScreen extends ConsumerWidget {
                     icon: Icons.help_outline,
                     title: 'Preguntas Frecuentes',
                     subtitle: 'Resuelve tus dudas',
-                    onTap: () {},
+                    onTap: () => context.push('/faq'),
                   ),
                   _ProfileTile(
                     icon: Icons.mail_outlined,
                     title: 'Contacto',
                     subtitle: 'Escríbenos para cualquier consulta',
-                    onTap: () {},
+                    onTap: () => context.push('/contacto'),
                   ),
 
                   const SizedBox(height: 24),
@@ -128,17 +158,22 @@ class ProfileScreen extends ConsumerWidget {
                   _ProfileTile(
                     icon: Icons.description_outlined,
                     title: 'Términos y Condiciones',
-                    onTap: () {},
+                    onTap: () => context.push('/terminos'),
                   ),
                   _ProfileTile(
                     icon: Icons.privacy_tip_outlined,
                     title: 'Política de Privacidad',
-                    onTap: () {},
+                    onTap: () => context.push('/privacidad'),
                   ),
                   _ProfileTile(
                     icon: Icons.cookie_outlined,
                     title: 'Política de Cookies',
-                    onTap: () {},
+                    onTap: () => context.push('/cookies'),
+                  ),
+                  _ProfileTile(
+                    icon: Icons.assignment_return_outlined,
+                    title: 'Política de Devoluciones',
+                    onTap: () => context.push('/devoluciones-info'),
                   ),
 
                   const SizedBox(height: 32),

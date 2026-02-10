@@ -8,14 +8,24 @@ import 'package:by_arena/presentation/screens/cart/cart_screen.dart';
 import 'package:by_arena/presentation/screens/profile/profile_screen.dart';
 import 'package:by_arena/presentation/screens/product/product_detail_screen.dart';
 import 'package:by_arena/presentation/screens/checkout/checkout_screen.dart';
+import 'package:by_arena/presentation/screens/checkout/checkout_success_screen.dart';
 import 'package:by_arena/presentation/screens/orders/orders_screen.dart';
 import 'package:by_arena/presentation/screens/orders/order_detail_screen.dart';
 import 'package:by_arena/presentation/screens/returns/return_request_screen.dart';
 import 'package:by_arena/presentation/screens/tracking/tracking_screen.dart';
 import 'package:by_arena/presentation/screens/auth/login_screen.dart';
 import 'package:by_arena/presentation/screens/auth/register_screen.dart';
+import 'package:by_arena/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:by_arena/presentation/screens/search/search_screen.dart';
 import 'package:by_arena/presentation/screens/wishlist/wishlist_screen.dart';
+import 'package:by_arena/presentation/screens/offers/offers_screen.dart';
+import 'package:by_arena/presentation/screens/blog/blog_list_screen.dart';
+import 'package:by_arena/presentation/screens/blog/blog_detail_screen.dart';
+import 'package:by_arena/presentation/screens/contact/contact_screen.dart';
+import 'package:by_arena/presentation/screens/info/faq_screen.dart';
+import 'package:by_arena/presentation/screens/info/about_screen.dart';
+import 'package:by_arena/presentation/screens/info/legal_screen.dart';
+import 'package:by_arena/presentation/screens/address/address_management_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -68,6 +78,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
+        path: '/checkout-exitoso',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CheckoutSuccessScreen(
+          sessionId: state.uri.queryParameters['session_id'],
+        ),
+      ),
+      GoRoute(
         path: '/mis-pedidos',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const OrdersScreen(),
@@ -102,6 +119,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
+        path: '/recuperar-contrasena',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
         path: '/buscar',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SearchScreen(),
@@ -110,6 +132,63 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/favoritos',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const WishlistScreen(),
+      ),
+      GoRoute(
+        path: '/ofertas',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const OffersScreen(),
+      ),
+      GoRoute(
+        path: '/blog',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const BlogListScreen(),
+      ),
+      GoRoute(
+        path: '/blog/:slug',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => BlogDetailScreen(
+          slug: state.pathParameters['slug']!,
+        ),
+      ),
+      GoRoute(
+        path: '/contacto',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ContactScreen(),
+      ),
+      GoRoute(
+        path: '/faq',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FaqScreen(),
+      ),
+      GoRoute(
+        path: '/sobre-nosotros',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/terminos',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => LegalScreen.terms(),
+      ),
+      GoRoute(
+        path: '/privacidad',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => LegalScreen.privacy(),
+      ),
+      GoRoute(
+        path: '/cookies',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => LegalScreen.cookies(),
+      ),
+      GoRoute(
+        path: '/devoluciones-info',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => LegalScreen.returns(),
+      ),
+      GoRoute(
+        path: '/mis-direcciones',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AddressManagementScreen(),
       ),
     ],
   );
