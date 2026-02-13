@@ -9,20 +9,41 @@ import 'package:by_arena/presentation/widgets/shared_widgets.dart';
 
 IconData _categoryIcon(String slug) {
   switch (slug) {
-    case 'bolsos':
-      return Icons.shopping_bag_outlined;
     case 'collares':
-      return Icons.auto_awesome_outlined;
-    case 'pendientes':
-      return Icons.diamond_outlined;
+      return Icons.all_inclusive_outlined;  // cadena / collar
     case 'pulseras':
-      return Icons.watch_outlined;
+      return Icons.trip_origin;            // doble círculo / pulsera
+    case 'pendientes':
+      return Icons.water_drop_outlined;    // gota / pendiente
+    case 'bolsos':
+      return Icons.shopping_bag_outlined;  // bolso
     case 'perfumes':
-      return Icons.spa_outlined;
+      return Icons.science_outlined;       // frasco / perfume
     case 'anillos':
       return Icons.circle_outlined;
+    case 'otros':
+      return Icons.play_arrow_outlined;    // triángulo
     default:
       return Icons.star_outline_rounded;
+  }
+}
+
+List<Color> _categoryGradient(String slug) {
+  switch (slug) {
+    case 'collares':
+      return [const Color(0xFFFEF9C3), const Color(0xFFFEF3C7)]; // amarillo pastel
+    case 'pulseras':
+      return [const Color(0xFFFFE4E6), const Color(0xFFFCE7F3)]; // rosa pastel
+    case 'pendientes':
+      return [const Color(0xFFE0E7FF), const Color(0xFFEDE9FE)]; // lila pastel
+    case 'bolsos':
+      return [const Color(0xFFFFEDD5), const Color(0xFFFEF3C7)]; // naranja pastel
+    case 'perfumes':
+      return [const Color(0xFFFCE7F3), const Color(0xFFFFE4E6)]; // rosa pastel
+    case 'otros':
+      return [const Color(0xFFCCFBF1), const Color(0xFFD1FAE5)]; // verde menta
+    default:
+      return [const Color(0xFFF5F5F5), const Color(0xFFEEEEEE)];
   }
 }
 
@@ -103,55 +124,50 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 100,
+                    height: 120,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         final cat = categories[index];
+                        final slug = cat.slug ?? cat.name.toLowerCase();
+                        final gradient = _categoryGradient(slug);
                         return GestureDetector(
                           onTap: () {
                             ref.read(selectedCategoryProvider.notifier).state = cat.id;
                             context.go('/catalogo');
                           },
                           child: Container(
-                            width: 90,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            width: 100,
+                            margin: const EdgeInsets.symmetric(horizontal: 6),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: gradient,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  width: 60,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [AppColors.arenaPale, Color(0xFFF0E6D8)],
-                                    ),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: AppColors.arenaLight, width: 1.5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.arena.withOpacity(0.08),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    _categoryIcon(cat.slug ?? cat.name.toLowerCase()),
-                                    color: AppColors.gold,
-                                    size: 26,
-                                  ),
+                                Icon(
+                                  _categoryIcon(slug),
+                                  color: AppColors.textSecondary.withOpacity(0.5),
+                                  size: 36,
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: 10),
                                 Text(
                                   cat.name,
                                   textAlign: TextAlign.center,
-                                  maxLines: 2,
+                                  maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
                                 ),
                               ],
                             ),
