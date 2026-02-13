@@ -203,6 +203,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                       imageUrl: product.imageUrl,
                                       quantity: _quantity,
                                       price: product.effectivePrice,
+                                      stock: product.stock,
                                     ),
                                   );
                                   ScaffoldMessenger.of(context).showSnackBar(

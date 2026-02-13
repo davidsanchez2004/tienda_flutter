@@ -16,15 +16,11 @@ class ContactRepository {
     required String subject,
     required String message,
   }) async {
-    await _dio.post('/api/email/send-branded', data: {
-      'template': 'contact',
-      'to': email,
-      'data': {
-        'customerName': name,
-        'customerEmail': email,
-        'subject': subject,
-        'message': message,
-      },
+    await _dio.post('/api/contact/send', data: {
+      'name': name,
+      'email': email,
+      'subject': subject,
+      'message': message,
     });
   }
 

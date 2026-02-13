@@ -143,6 +143,7 @@ class CartScreen extends ConsumerWidget {
                                 ),
                                 _QtyButton(
                                   icon: Icons.add,
+                                  enabled: item.quantity < item.stock,
                                   onTap: () => ref.read(cartProvider.notifier)
                                       .updateQuantity(item.productId, item.quantity + 1),
                                 ),
@@ -218,20 +219,24 @@ class CartScreen extends ConsumerWidget {
 class _QtyButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _QtyButton({required this.icon, required this.onTap});
+  final bool enabled;
+  const _QtyButton({required this.icon, required this.onTap, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.arenaLight),
-          borderRadius: BorderRadius.circular(6),
+      onTap: enabled ? onTap : null,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.3,
+        child: Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.arenaLight),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(icon, size: 16),
         ),
-        child: Icon(icon, size: 16),
       ),
     );
   }

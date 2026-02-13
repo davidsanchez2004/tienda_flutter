@@ -23,6 +23,6 @@ class AddressRepository {
   }
 
   Future<void> deleteAddress(String id) async {
-    await _dio.delete('/api/addresses', data: {'id': id});
+    await _dio.delete('/api/addresses', data: {'address_id': id});
   }
 }

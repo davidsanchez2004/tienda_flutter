@@ -40,10 +40,13 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     final index = state.indexWhere((i) => i.productId == item.productId);
     if (index >= 0) {
       final existing = state[index];
-      final updated = existing.copyWith(quantity: existing.quantity + item.quantity);
+      final maxStock = item.stock > 0 ? item.stock : existing.stock;
+      final newQty = (existing.quantity + item.quantity).clamp(1, maxStock);
+      final updated = existing.copyWith(quantity: newQty, stock: maxStock);
       state = [...state]..[index] = updated;
     } else {
-      state = [...state, item];
+      final clamped = item.copyWith(quantity: item.quantity.clamp(1, item.stock));
+      state = [...state, clamped];
     }
     _saveToStorage();
   }
@@ -60,7 +63,9 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     }
     final index = state.indexWhere((i) => i.productId == productId);
     if (index >= 0) {
-      state = [...state]..[index] = state[index].copyWith(quantity: quantity);
+      final item = state[index];
+      final clamped = quantity.clamp(1, item.stock);
+      state = [...state]..[index] = item.copyWith(quantity: clamped);
       _saveToStorage();
     }
   }
