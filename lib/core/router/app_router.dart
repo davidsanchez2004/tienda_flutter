@@ -25,6 +25,15 @@ import 'package:by_arena/presentation/screens/info/faq_screen.dart';
 import 'package:by_arena/presentation/screens/info/about_screen.dart';
 import 'package:by_arena/presentation/screens/info/legal_screen.dart';
 import 'package:by_arena/presentation/screens/address/address_management_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_login_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_dashboard_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_orders_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_products_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_categories_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_returns_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_discounts_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_blog_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_newsletter_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -183,6 +192,52 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/mis-direcciones',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AddressManagementScreen(),
+      ),
+      // Admin routes
+      GoRoute(
+        path: '/admin-login',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminLoginScreen(),
+      ),
+      GoRoute(
+        path: '/admin-panel',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/admin-orders',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminOrdersScreen(),
+      ),
+      GoRoute(
+        path: '/admin-products',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminProductsScreen(),
+      ),
+      GoRoute(
+        path: '/admin-categories',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminCategoriesScreen(),
+      ),
+      GoRoute(
+        path: '/admin-returns',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminReturnsScreen(),
+      ),
+      GoRoute(
+        path: '/admin-discounts',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminDiscountsScreen(),
+      ),
+      GoRoute(
+        path: '/admin-blog',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminBlogScreen(),
+      ),
+      GoRoute(
+        path: '/admin-newsletter',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminNewsletterScreen(),
       ),
     ],
   );

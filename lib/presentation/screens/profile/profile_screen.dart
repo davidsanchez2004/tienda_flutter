@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/presentation/providers/auth_provider.dart';
+import 'package:by_arena/data/repositories/admin_repository.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -82,6 +83,21 @@ class ProfileScreen extends ConsumerWidget {
                   const Text('Mi Cuenta',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
+
+                  // Admin panel option - only visible for admin users
+                  if (user.role == 'admin')
+                    _ProfileTile(
+                      icon: Icons.admin_panel_settings,
+                      title: 'Panel de Control',
+                      subtitle: 'Gestión de la tienda',
+                      onTap: () {
+                        if (AdminRepository.isAdminLoggedIn) {
+                          context.push('/admin-panel');
+                        } else {
+                          context.push('/admin-login');
+                        }
+                      },
+                    ),
 
                   _ProfileTile(
                     icon: Icons.shopping_bag_outlined,

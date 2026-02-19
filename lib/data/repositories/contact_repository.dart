@@ -16,7 +16,7 @@ class ContactRepository {
     required String subject,
     required String message,
   }) async {
-    await _dio.post('/api/contact/send', data: {
+    await _dio.post('/contact/send', data: {
       'name': name,
       'email': email,
       'subject': subject,
@@ -25,7 +25,7 @@ class ContactRepository {
   }
 
   Future<void> subscribeNewsletter(String email, {String? name}) async {
-    await _dio.post('/api/newsletter/subscribe', data: {
+    await _dio.post('/newsletter/subscribe', data: {
       'email': email,
       'name': name,
     });

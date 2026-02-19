@@ -12,17 +12,17 @@ class AddressRepository {
   AddressRepository(this._dio);
 
   Future<List<Address>> getAddresses() async {
-    final res = await _dio.get('/api/addresses');
+    final res = await _dio.get('/addresses');
     final list = res.data['addresses'] as List? ?? [];
     return list.map((e) => Address.fromJson(e)).toList();
   }
 
   Future<Address> createAddress(Address address) async {
-    final res = await _dio.post('/api/addresses', data: address.toJson());
+    final res = await _dio.post('/addresses', data: address.toJson());
     return Address.fromJson(res.data['address']);
   }
 
   Future<void> deleteAddress(String id) async {
-    await _dio.delete('/api/addresses', data: {'address_id': id});
+    await _dio.delete('/addresses', data: {'address_id': id});
   }
 }

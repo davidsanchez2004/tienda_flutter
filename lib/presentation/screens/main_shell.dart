@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/presentation/providers/cart_provider.dart';
+import 'package:by_arena/presentation/widgets/whatsapp_floating_button.dart';
 
 class MainShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -24,6 +25,7 @@ class _MainShellState extends ConsumerState<MainShell> {
 
     return Scaffold(
       body: widget.child,
+      floatingActionButton: const WhatsAppFloatingButton(),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
