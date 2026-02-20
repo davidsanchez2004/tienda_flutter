@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,11 +6,34 @@ import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/core/config/app_config.dart';
 import 'package:by_arena/presentation/providers/order_provider.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
+import 'package:by_arena/data/repositories/order_repository.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
   const OrderDetailScreen({super.key, required this.orderId});
+
+  Future<void> _downloadInvoice(BuildContext context, WidgetRef ref, String orderId) async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Descargando factura...')),
+      );
+      final repo = ref.read(orderRepositoryProvider);
+      final bytes = await repo.downloadOrderInvoice(orderId);
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/factura_$orderId.pdf');
+      await file.writeAsBytes(bytes);
+      await OpenFilex.open(file.path);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al descargar factura: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -130,6 +154,20 @@ class OrderDetailScreen extends ConsumerWidget {
               ],
 
               const SizedBox(height: 24),
+
+              // Download invoice button
+              if (order.paymentStatus == 'paid' || order.status == 'paid' || order.status == 'shipped' || order.status == 'delivered')
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: OutlinedButton.icon(
+                    onPressed: () => _downloadInvoice(context, ref, order.id),
+                    icon: const Icon(Icons.receipt_long),
+                    label: const Text('Descargar Factura'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                  ),
+                ),
 
               // Actions
               if (order.status == 'delivered')

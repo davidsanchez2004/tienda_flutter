@@ -69,6 +69,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         phone: phone,
       );
       state = AuthState(status: AuthStatus.authenticated, user: user);
+
+      // Claim guest orders after successful registration
+      await _repo.claimGuestOrders(userId: user.id, email: email);
     } catch (e) {
       state = AuthState(
         status: AuthStatus.unauthenticated,

@@ -5,6 +5,7 @@ import 'package:by_arena/core/network/api_exception.dart';
 import 'package:by_arena/domain/models/product.dart';
 import 'package:by_arena/domain/models/category.dart';
 import 'package:by_arena/domain/models/order.dart';
+import 'package:by_arena/domain/models/invoice.dart';
 
 final adminRepositoryProvider = Provider<AdminRepository>((ref) {
   return AdminRepository(ref.read(dioProvider));
@@ -145,6 +146,136 @@ class AdminRepository {
         options: Options(headers: {'x-admin-key': _adminKey}));
       final list = (response.data['returns'] as List?) ?? (response.data as List?) ?? [];
       return list.cast<Map<String, dynamic>>();
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> updateReturn({
+    required String returnId,
+    required String status,
+    String? adminNotes,
+    String? refundStatus,
+  }) async {
+    try {
+      final response = await _dio.patch('/admin/update-return',
+        data: {
+          'returnId': returnId,
+          'status': status,
+          if (adminNotes != null) 'adminNotes': adminNotes,
+          if (refundStatus != null) 'refundStatus': refundStatus,
+        },
+        options: Options(headers: {'x-admin-key': _adminKey}));
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  // ─── Invoices ─────────────────────────────────────
+  Future<List<Invoice>> getInvoices({String? type}) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (type != null) queryParams['type'] = type;
+      final response = await _dio.get('/admin/invoices',
+        queryParameters: queryParams,
+        options: Options(headers: {'x-admin-key': _adminKey}));
+      final list = (response.data['invoices'] as List?) ?? [];
+      return list.map((json) => Invoice.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> generateInvoice({
+    required String type,
+    String? orderId,
+    String? returnId,
+  }) async {
+    try {
+      final response = await _dio.post('/admin/invoices',
+        data: {
+          'type': type,
+          if (orderId != null) 'orderId': orderId,
+          if (returnId != null) 'returnId': returnId,
+        },
+        options: Options(headers: {'x-admin-key': _adminKey}));
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  /// Download invoice PDF as bytes
+  Future<List<int>> downloadInvoicePdf(String invoiceId) async {
+    try {
+      final response = await _dio.get('/admin/invoices/$invoiceId',
+        options: Options(
+          headers: {'x-admin-key': _adminKey},
+          responseType: ResponseType.bytes,
+        ));
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  // ─── Upload Image ─────────────────────────────────
+  Future<String> uploadImage(List<int> bytes, String filename) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': MultipartFile.fromBytes(bytes, filename: filename),
+      });
+      final response = await _dio.post('/admin/upload-image',
+        data: formData,
+        options: Options(headers: {
+          'x-admin-key': _adminKey,
+          'Content-Type': 'multipart/form-data',
+        }));
+      return response.data['url'] ?? '';
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  // ─── Auto Coupon Rules ────────────────────────────
+  Future<List<Map<String, dynamic>>> getAutoCouponRules() async {
+    try {
+      final response = await _dio.get('/admin/auto-coupon-rules',
+        options: Options(headers: {'x-admin-key': _adminKey}));
+      final list = (response.data['rules'] as List?) ?? [];
+      return list.cast<Map<String, dynamic>>();
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> createAutoCouponRule(Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.post('/admin/auto-coupon-rules',
+        data: data,
+        options: Options(headers: {'x-admin-key': _adminKey}));
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<void> toggleAutoCouponRule(String id, bool isActive) async {
+    try {
+      await _dio.put('/admin/auto-coupon-rules',
+        data: {'id': id, 'is_active': isActive},
+        options: Options(headers: {'x-admin-key': _adminKey}));
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<void> deleteAutoCouponRule(String id) async {
+    try {
+      await _dio.delete('/admin/auto-coupon-rules',
+        data: {'id': id},
+        options: Options(headers: {'x-admin-key': _adminKey}));
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }

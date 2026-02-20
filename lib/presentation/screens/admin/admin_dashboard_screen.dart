@@ -110,14 +110,26 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   _AdminMenuTile(
                     icon: Icons.assignment_return_outlined,
                     title: 'Devoluciones',
-                    subtitle: 'Ver solicitudes de devolución',
+                    subtitle: 'Ver y gestionar solicitudes de devolución',
                     onTap: () => context.push('/admin-returns'),
+                  ),
+                  _AdminMenuTile(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'Facturas',
+                    subtitle: 'Ver, descargar y generar facturas',
+                    onTap: () => context.push('/admin-invoices'),
                   ),
                   _AdminMenuTile(
                     icon: Icons.local_offer_outlined,
                     title: 'Códigos de Descuento',
                     subtitle: 'Crear y gestionar descuentos',
                     onTap: () => context.push('/admin-discounts'),
+                  ),
+                  _AdminMenuTile(
+                    icon: Icons.auto_awesome_outlined,
+                    title: 'Cupones Automáticos',
+                    subtitle: 'Reglas de cupones por nivel de gasto',
+                    onTap: () => context.push('/admin-auto-coupons'),
                   ),
                   _AdminMenuTile(
                     icon: Icons.article_outlined,

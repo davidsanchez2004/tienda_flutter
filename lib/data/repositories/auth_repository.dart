@@ -79,4 +79,28 @@ class AuthRepository {
   }
 
   Future<bool> isLoggedIn() => _storage.isLoggedIn();
+
+  /// Send password reset email via /api/auth/forgot-password
+  Future<void> forgotPassword(String email) async {
+    try {
+      await _dio.post('/auth/forgot-password', data: {'email': email});
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  /// After registration, claim guest orders matching this email
+  Future<int> claimGuestOrders({required String userId, required String email}) async {
+    try {
+      final response = await _dio.post('/orders/claim-guest-orders', data: {
+        'userId': userId,
+        'email': email,
+      });
+      return response.data['claimedCount'] ?? 0;
+    } on DioException catch (e) {
+      // Non-critical: don't throw, just return 0
+      print('[AuthRepo] Error claiming guest orders: $e');
+      return 0;
+    }
+  }
 }

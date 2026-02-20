@@ -77,4 +77,15 @@ class OrderRepository {
       throw ApiException.fromDioError(e);
     }
   }
+
+  /// Download invoice PDF for an order (returns bytes)
+  Future<List<int>> downloadOrderInvoice(String orderId) async {
+    try {
+      final response = await _dio.get('/orders/$orderId/invoice',
+        options: Options(responseType: ResponseType.bytes));
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
 }

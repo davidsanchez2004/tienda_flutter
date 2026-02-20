@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
+import 'package:by_arena/data/repositories/auth_repository.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _emailCtrl = TextEditingController();
   bool _isLoading = false;
   bool _sent = false;
@@ -27,11 +29,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
     setState(() { _isLoading = true; _error = null; });
 
-    // The Supabase auth handles password reset via the web client
-    // In a real implementation, call an API endpoint that triggers Supabase resetPasswordForEmail
-    await Future.delayed(const Duration(seconds: 1));
-
-    setState(() { _isLoading = false; _sent = true; });
+    try {
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.forgotPassword(_emailCtrl.text.trim());
+      setState(() { _isLoading = false; _sent = true; });
+    } catch (e) {
+      setState(() { _isLoading = false; _error = 'Error al enviar: $e'; });
+    }
   }
 
   @override
