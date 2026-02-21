@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:by_arena/core/config/app_config.dart';
@@ -8,6 +9,7 @@ final dioProvider = Provider<Dio>((ref) {
     baseUrl: AppConfig.apiBaseUrl,
     connectTimeout: const Duration(seconds: 15),
     receiveTimeout: const Duration(seconds: 15),
+    responseType: ResponseType.plain,
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -15,6 +17,7 @@ final dioProvider = Provider<Dio>((ref) {
   ));
 
   dio.interceptors.add(AuthInterceptor(ref));
+  dio.interceptors.add(_JsonParseInterceptor());
   dio.interceptors.add(LogInterceptor(
     requestBody: true,
     responseBody: true,
@@ -65,5 +68,40 @@ class AuthInterceptor extends Interceptor {
       }
     }
     handler.next(err);
+  }
+}
+
+/// Interceptor que parsea las respuestas plain-text a JSON.
+/// Detecta respuestas HTML (bloqueo ISP, errores de servidor) y lanza error claro.
+class _JsonParseInterceptor extends Interceptor {
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final raw = response.data;
+    if (raw is String) {
+      final trimmed = raw.trim();
+
+      // Detectar HTML (bloqueo de ISP, páginas de error, etc.)
+      if (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html') || trimmed.startsWith('<')) {
+        handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+            error: 'El servidor no está disponible. Tu operador de internet puede estar bloqueando el acceso. Prueba con datos móviles o una VPN.',
+          ),
+        );
+        return;
+      }
+
+      // Parsear JSON
+      if (trimmed.isNotEmpty) {
+        try {
+          response.data = json.decode(trimmed);
+        } catch (_) {
+          // Si no es JSON válido, dejar como string
+        }
+      }
+    }
+    handler.next(response);
   }
 }
