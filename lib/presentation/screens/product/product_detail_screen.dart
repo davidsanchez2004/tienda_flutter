@@ -165,17 +165,50 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Quantity selector
+                      // Quantity selector & Add to cart (reactive to cart)
                       if (product.isAvailable) ...[
-                        const Text('Cantidad', style: TextStyle(fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8),
                         Builder(builder: (context) {
                           final cartItems = ref.watch(cartProvider);
                           final inCart = cartItems.where((i) => i.productId == product.id).fold(0, (sum, i) => sum + i.quantity);
                           final availableToAdd = (product.stock - inCart).clamp(0, product.stock);
+
+                          if (availableToAdd <= 0 && inCart > 0) {
+                            return Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.warning.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Has alcanzado el máximo disponible',
+                                    style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.warning),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Tienes $inCart de ${product.stock} en el carrito',
+                                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (inCart > 0)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Text(
+                                    'Ya tienes $inCart en el carrito',
+                                    style: const TextStyle(fontSize: 12, color: AppColors.warning),
+                                  ),
+                                ),
+                              const Text('Cantidad', style: TextStyle(fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 8),
                               Row(
                                 children: [
                                   _QtyButton(
@@ -196,58 +229,52 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                       if (_quantity < availableToAdd) setState(() => _quantity++);
                                     },
                                   ),
+                                  const SizedBox(width: 12),
+                                  Text('Máx. $availableToAdd', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                                 ],
                               ),
-                              if (inCart > 0)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 6),
-                                  child: Text(
-                                    'Ya tienes $inCart en el carrito',
-                                    style: const TextStyle(fontSize: 12, color: AppColors.warning),
-                                  ),
+                              const SizedBox(height: 20),
+                              // Add to cart button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton.icon(
+                                  onPressed: availableToAdd > 0
+                                      ? () {
+                                          ref.read(cartProvider.notifier).addItem(
+                                            CartItem(
+                                              productId: product.id,
+                                              name: product.name,
+                                              imageUrl: product.imageUrl,
+                                              quantity: _quantity,
+                                              price: product.effectivePrice,
+                                              stock: product.stock,
+                                            ),
+                                          );
+                                          setState(() => _quantity = 1);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('${product.name} añadido al carrito'),
+                                              backgroundColor: AppColors.arena,
+                                              behavior: SnackBarBehavior.floating,
+                                              action: SnackBarAction(
+                                                label: 'Ver carrito',
+                                                textColor: Colors.white,
+                                                onPressed: () => context.go('/carrito'),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      : null,
+                                  icon: const Icon(Icons.shopping_bag_outlined),
+                                  label: const Text('Añadir al carrito'),
                                 ),
+                              ),
                             ],
                           );
                         }),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 40),
                       ],
-
-                      // Add to cart
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton.icon(
-                          onPressed: product.isAvailable
-                              ? () {
-                                  ref.read(cartProvider.notifier).addItem(
-                                    CartItem(
-                                      productId: product.id,
-                                      name: product.name,
-                                      imageUrl: product.imageUrl,
-                                      quantity: _quantity,
-                                      price: product.effectivePrice,
-                                      stock: product.stock,
-                                    ),
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('${product.name} añadido al carrito'),
-                                      backgroundColor: AppColors.arena,
-                                      behavior: SnackBarBehavior.floating,
-                                      action: SnackBarAction(
-                                        label: 'Ver carrito',
-                                        textColor: Colors.white,
-                                        onPressed: () => context.go('/carrito'),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              : null,
-                          icon: const Icon(Icons.shopping_bag_outlined),
-                          label: Text(product.isAvailable ? 'Añadir al carrito' : 'No disponible'),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
