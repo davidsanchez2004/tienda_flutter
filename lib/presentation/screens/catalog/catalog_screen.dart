@@ -18,56 +18,81 @@ class CatalogScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catálogo'),
+        title: const Text(
+          'Catálogo',
+          style: TextStyle(
+            fontFamily: 'PlayfairDisplay',
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1,
+          ),
+        ),
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded, size: 26),
             onPressed: () => context.push('/buscar'),
           ),
           const CartIconBadge(),
+          const SizedBox(width: 4),
         ],
       ),
       body: Column(
         children: [
           // Category filter chips
           categoriesAsync.when(
-            data: (categories) => SizedBox(
-              height: 50,
+            data: (categories) => Container(
+              height: 52,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                border: Border(
+                  bottom: BorderSide(color: AppColors.arenaLight.withOpacity(0.5)),
+                ),
+              ),
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: const Text('Todos'),
-                      selected: selectedCategory == null,
-                      onSelected: (_) => ref.read(selectedCategoryProvider.notifier).state = null,
-                      selectedColor: AppColors.arena,
-                      labelStyle: TextStyle(
-                        color: selectedCategory == null ? Colors.white : AppColors.textPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    child: _FilterChip(
+                      label: 'Todos',
+                      isSelected: selectedCategory == null,
+                      onTap: () => ref.read(selectedCategoryProvider.notifier).state = null,
                     ),
                   ),
                   ...categories.map((cat) => Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(cat.name),
-                      selected: selectedCategory == cat.id,
-                      onSelected: (_) => ref.read(selectedCategoryProvider.notifier).state =
+                    child: _FilterChip(
+                      label: cat.name,
+                      isSelected: selectedCategory == cat.id,
+                      onTap: () => ref.read(selectedCategoryProvider.notifier).state =
                           selectedCategory == cat.id ? null : cat.id,
-                      selectedColor: AppColors.arena,
-                      labelStyle: TextStyle(
-                        color: selectedCategory == cat.id ? Colors.white : AppColors.textPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
                     ),
                   )),
                 ],
               ),
             ),
-            loading: () => const SizedBox(height: 50),
+            loading: () => const SizedBox(height: 52),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
+          // Products count
+          productsAsync.when(
+            data: (products) => Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Row(
+                children: [
+                  Text(
+                    '${products.length} productos',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
           // Products grid
@@ -75,25 +100,42 @@ class CatalogScreen extends ConsumerWidget {
             child: productsAsync.when(
               data: (products) {
                 if (products.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.inventory_2_outlined, size: 48, color: AppColors.arena),
-                        SizedBox(height: 12),
-                        Text('No hay productos en esta categoría',
-                            style: TextStyle(color: AppColors.textSecondary)),
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.arenaPale,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.inventory_2_outlined, size: 40, color: AppColors.arena),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'No hay productos en esta categoría',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () => ref.read(selectedCategoryProvider.notifier).state = null,
+                          child: const Text('Ver todos los productos'),
+                        ),
                       ],
                     ),
                   );
                 }
                 return GridView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.65,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.62,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
                   ),
                   itemCount: products.length,
                   itemBuilder: (context, index) {
@@ -113,6 +155,45 @@ class CatalogScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.textPrimary : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppColors.textPrimary : AppColors.arenaLight,
+            width: 1.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : AppColors.textPrimary,
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }

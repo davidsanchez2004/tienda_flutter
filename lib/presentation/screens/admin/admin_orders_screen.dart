@@ -92,7 +92,7 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
     if (result != null && result != order['status']) {
       try {
         final repo = ref.read(adminRepositoryProvider);
-        await repo.updateOrderStatus(order['id'], result);
+        await repo.updateOrderStatus(order['id'], {'status': result});
         _loadOrders();
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Estado actualizado')));
       } catch (e) {

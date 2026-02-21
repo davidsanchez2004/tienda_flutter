@@ -22,54 +22,80 @@ class ProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 180,
+            expandedHeight: 200,
             pinned: true,
+            elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [AppColors.arena, AppColors.arenaLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFD4C5B9), Color(0xFFE8DDD3), Color(0xFFF5EFE6)],
                   ),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(height: 40),
-                      CircleAvatar(
-                        radius: 36,
-                        backgroundColor: Colors.white,
-                        child: Text(
-                          (user.fullName.isNotEmpty)
-                              ? user.fullName[0].toUpperCase()
-                              : user.email[0].toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.arena,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: -20,
+                      right: -30,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.15),
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(height: 50),
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
+                            ),
+                            child: CircleAvatar(
+                              radius: 36,
+                              backgroundColor: Colors.white,
+                              child: Text(
+                                (user.fullName.isNotEmpty)
+                                    ? user.fullName[0].toUpperCase()
+                                    : user.email[0].toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.arena,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 12),
+                          Text(
+                            user.fullName.isNotEmpty ? user.fullName : user.email,
+                            style: const TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                              fontFamily: 'PlayfairDisplay',
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            user.email,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        user.fullName.isNotEmpty ? user.fullName : user.email,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        user.email,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.white.withValues(alpha: 0.8),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -245,40 +271,71 @@ class ProfileScreen extends ConsumerWidget {
 
   Widget _buildUnauthenticated(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Perfil')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.person_outline, size: 64, color: AppColors.arenaLight),
-              const SizedBox(height: 16),
-              const Text('Accede a tu cuenta',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              const Text(
-                'Inicia sesión para gestionar tus pedidos y más',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.cream, Colors.white],
+            stops: [0.0, 0.5],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.arenaPale,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.arenaLight, width: 2),
+                    ),
+                    child: const Icon(Icons.person_outline_rounded, size: 48, color: AppColors.arena),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Bienvenido a BY ARENA',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'PlayfairDisplay',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Inicia sesión para gestionar tus pedidos,\ndirecciones y mucho más',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () => context.push('/login'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    onPressed: () => context.push('/registro'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text('Crear Cuenta', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => context.push('/login'),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 48),
-                ),
-                child: const Text('Iniciar Sesión'),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => context.push('/registro'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(200, 48),
-                ),
-                child: const Text('Crear Cuenta'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
