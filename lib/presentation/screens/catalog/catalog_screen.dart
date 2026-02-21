@@ -5,6 +5,7 @@ import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
 import 'package:by_arena/presentation/widgets/product_card.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
+import 'package:by_arena/presentation/widgets/cart_icon_badge.dart';
 
 class CatalogScreen extends ConsumerWidget {
   const CatalogScreen({super.key});
@@ -23,6 +24,7 @@ class CatalogScreen extends ConsumerWidget {
             icon: const Icon(Icons.search),
             onPressed: () => context.push('/buscar'),
           ),
+          const CartIconBadge(),
         ],
       ),
       body: Column(

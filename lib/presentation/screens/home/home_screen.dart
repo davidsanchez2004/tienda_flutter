@@ -6,6 +6,7 @@ import 'package:by_arena/core/config/app_config.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
 import 'package:by_arena/presentation/widgets/product_card.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
+import 'package:by_arena/presentation/widgets/cart_icon_badge.dart';
 
 IconData _categoryIcon(String slug) {
   switch (slug) {
@@ -69,6 +70,7 @@ class HomeScreen extends ConsumerWidget {
                 icon: const Icon(Icons.search),
                 onPressed: () => context.push('/buscar'),
               ),
+              const CartIconBadge(),
             ],
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,

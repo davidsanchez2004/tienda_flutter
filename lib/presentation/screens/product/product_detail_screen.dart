@@ -7,6 +7,7 @@ import 'package:by_arena/core/config/app_config.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
 import 'package:by_arena/presentation/providers/cart_provider.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
+import 'package:by_arena/presentation/widgets/cart_icon_badge.dart';
 import 'package:by_arena/domain/models/cart_item.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -48,6 +49,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),
+                actions: const [
+                  CartIconBadge(),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
                   background: PageView.builder(
                     onPageChanged: (index) => setState(() => _selectedImageIndex = index),
@@ -165,27 +169,46 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       if (product.isAvailable) ...[
                         const Text('Cantidad', style: TextStyle(fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            _QtyButton(
-                              icon: Icons.remove,
-                              onTap: () {
-                                if (_quantity > 1) setState(() => _quantity--);
-                              },
-                            ),
-                            Container(
-                              width: 48,
-                              alignment: Alignment.center,
-                              child: Text('$_quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                            ),
-                            _QtyButton(
-                              icon: Icons.add,
-                              onTap: () {
-                                if (_quantity < product.stock) setState(() => _quantity++);
-                              },
-                            ),
-                          ],
-                        ),
+                        Builder(builder: (context) {
+                          final cartItems = ref.watch(cartProvider);
+                          final inCart = cartItems.where((i) => i.productId == product.id).fold(0, (sum, i) => sum + i.quantity);
+                          final availableToAdd = (product.stock - inCart).clamp(0, product.stock);
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  _QtyButton(
+                                    icon: Icons.remove,
+                                    onTap: () {
+                                      if (_quantity > 1) setState(() => _quantity--);
+                                    },
+                                  ),
+                                  Container(
+                                    width: 48,
+                                    alignment: Alignment.center,
+                                    child: Text('$_quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                                  ),
+                                  _QtyButton(
+                                    icon: Icons.add,
+                                    enabled: _quantity < availableToAdd,
+                                    onTap: () {
+                                      if (_quantity < availableToAdd) setState(() => _quantity++);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              if (inCart > 0)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 6),
+                                  child: Text(
+                                    'Ya tienes $inCart en el carrito',
+                                    style: const TextStyle(fontSize: 12, color: AppColors.warning),
+                                  ),
+                                ),
+                            ],
+                          );
+                        }),
                         const SizedBox(height: 20),
                       ],
 
@@ -245,20 +268,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 class _QtyButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _QtyButton({required this.icon, required this.onTap});
+  final bool enabled;
+  const _QtyButton({required this.icon, required this.onTap, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.arenaLight, width: 2),
-          borderRadius: BorderRadius.circular(8),
+      onTap: enabled ? onTap : null,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.3,
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.arenaLight, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 18, color: AppColors.textPrimary),
         ),
-        child: Icon(icon, size: 18, color: AppColors.textPrimary),
       ),
     );
   }

@@ -12,7 +12,7 @@ class CartItem {
     required this.imageUrl,
     required this.quantity,
     required this.price,
-    this.stock = 999,
+    required this.stock,
   });
 
   double get total => price * quantity;
@@ -44,7 +44,7 @@ class CartItem {
       imageUrl: json['image_url'] ?? '',
       quantity: json['quantity'] ?? 1,
       price: (json['price'] ?? 0).toDouble(),
-      stock: json['stock'] ?? 999,
+      stock: json['stock'] ?? 0,
     );
   }
 }
