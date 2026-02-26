@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/core/config/app_config.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
@@ -63,7 +64,7 @@ class HomeScreen extends ConsumerWidget {
         slivers: [
           // ── Hero AppBar ──
           SliverAppBar(
-            expandedHeight: 220,
+            expandedHeight: 280,
             floating: false,
             pinned: true,
             elevation: 0,
@@ -107,23 +108,23 @@ class HomeScreen extends ConsumerWidget {
                       top: -30,
                       right: -40,
                       child: Container(
-                        width: 160,
-                        height: 160,
+                        width: 180,
+                        height: 180,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.gold.withOpacity(0.08),
+                          color: AppColors.gold.withValues(alpha: 0.08),
                         ),
                       ),
                     ),
                     Positioned(
-                      bottom: 20,
+                      bottom: 30,
                       left: -20,
                       child: Container(
-                        width: 100,
-                        height: 100,
+                        width: 120,
+                        height: 120,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.arena.withOpacity(0.1),
+                          color: AppColors.arena.withValues(alpha: 0.1),
                         ),
                       ),
                     ),
@@ -132,16 +133,47 @@ class HomeScreen extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 50),
+                          // Badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: AppColors.arena.withValues(alpha: 0.8),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              'Nueva Colección 2026',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.diamond_outlined,
                               size: 40,
-                              color: AppColors.gold.withOpacity(0.7),
+                              color: AppColors.gold.withValues(alpha: 0.7),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Bisutería premium y complementos\nelegantes',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color:
+                                  AppColors.textPrimary.withValues(alpha: 0.6),
+                              fontStyle: FontStyle.italic,
+                              height: 1.4,
                             ),
                           ),
                         ],
@@ -153,10 +185,36 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
+          // ── CTA Buttons ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _CtaButton(
+                      label: 'Explorar Catálogo',
+                      onTap: () => context.go('/catalogo'),
+                      filled: true,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _CtaButton(
+                      label: 'Ver Ofertas',
+                      onTap: () => context.push('/ofertas'),
+                      filled: false,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           // ── Promo Banner ──
           SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+              margin: const EdgeInsets.fromLTRB(16, 16, 16, 4),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
@@ -166,26 +224,31 @@ class HomeScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.local_shipping_rounded, color: AppColors.gold, size: 24),
+                  const Icon(Icons.local_shipping_rounded,
+                      color: AppColors.gold, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: RichText(
                       text: TextSpan(
-                        style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.3),
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 13, height: 1.3),
                         children: [
                           const TextSpan(
                             text: 'Envío gratuito ',
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
                           TextSpan(
-                            text: 'en pedidos +${AppConfig.freeShippingThreshold.toStringAsFixed(0)}${AppConfig.currency}',
-                            style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                            text:
+                                'en pedidos +${AppConfig.freeShippingThreshold.toStringAsFixed(0)}${AppConfig.currency}',
+                            style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.8)),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.5), size: 14),
+                  Icon(Icons.arrow_forward_ios,
+                      color: Colors.white.withValues(alpha: 0.5), size: 14),
                 ],
               ),
             ),
@@ -198,29 +261,14 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 28, 16, 14),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 4,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            color: AppColors.gold,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Categorías',
-                          style: TextStyle(
-                            fontFamily: 'PlayfairDisplay',
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                    padding: const EdgeInsets.fromLTRB(16, 32, 16, 6),
+                    child: _SectionHeader(
+                      title: 'Nuestras Categorías',
+                      subtitle:
+                          'Explora nuestra colección de bisutería y accesorios premium',
                     ),
                   ),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 110,
                     child: ListView.builder(
@@ -233,7 +281,8 @@ class HomeScreen extends ConsumerWidget {
                         final gradient = _categoryGradient(slug);
                         return GestureDetector(
                           onTap: () {
-                            ref.read(selectedCategoryProvider.notifier).state = cat.id;
+                            ref.read(selectedCategoryProvider.notifier).state =
+                                cat.id;
                             context.go('/catalogo');
                           },
                           child: Container(
@@ -248,7 +297,7 @@ class HomeScreen extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: gradient.last.withOpacity(0.3),
+                                  color: gradient.last.withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -260,18 +309,20 @@ class HomeScreen extends ConsumerWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.6),
+                                    color: Colors.white.withValues(alpha: 0.6),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
                                     _categoryIcon(slug),
-                                    color: AppColors.textPrimary.withOpacity(0.7),
+                                    color: AppColors.textPrimary
+                                        .withValues(alpha: 0.7),
                                     size: 26,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   child: Text(
                                     cat.name,
                                     textAlign: TextAlign.center,
@@ -301,35 +352,49 @@ class HomeScreen extends ConsumerWidget {
           // ── Featured Products header ──
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 32, 16, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.fromLTRB(16, 36, 16, 4),
+              child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 4,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: AppColors.gold,
-                          borderRadius: BorderRadius.circular(2),
+                  // Pill badge
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star_rounded,
+                            size: 16, color: AppColors.gold),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Selección Especial',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.gold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Destacados',
-                        style: TextStyle(
-                          fontFamily: 'PlayfairDisplay',
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  TextButton.icon(
-                    onPressed: () => context.go('/catalogo'),
-                    icon: const Text('Ver todo', style: TextStyle(fontSize: 13)),
-                    label: const Icon(Icons.arrow_forward_rounded, size: 16),
+                  const SizedBox(height: 10),
+                  _SectionHeader(
+                    title: 'Productos Destacados',
+                    subtitle:
+                        'Nuestra selección curada de las piezas más especiales',
+                  ),
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => context.go('/catalogo'),
+                      icon: const Text('Ver todo',
+                          style: TextStyle(fontSize: 13)),
+                      label: const Icon(Icons.arrow_forward_rounded, size: 16),
+                    ),
                   ),
                 ],
               ),
@@ -368,22 +433,100 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
+          // ── View All Catalog Button ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+              child: OutlinedButton(
+                onPressed: () => context.go('/catalogo'),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.arena, width: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Ver Todo el Catálogo',
+                  style: TextStyle(
+                    color: AppColors.arena,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // ── Why Choose Us ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
+              child: Column(
+                children: [
+                  _SectionHeader(
+                    title: '¿Por qué elegirnos?',
+                    subtitle: null,
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.95,
+                    children: const [
+                      _BenefitCard(
+                        icon: Icons.verified_outlined,
+                        title: 'Calidad Premium',
+                        desc:
+                            'Materiales seleccionados para durabilidad y elegancia',
+                        color: Color(0xFFF5F1ED),
+                      ),
+                      _BenefitCard(
+                        icon: Icons.palette_outlined,
+                        title: 'Diseño Exclusivo',
+                        desc:
+                            'Colecciones únicas diseñadas con pasión y detalle',
+                        color: Color(0xFFFEF9C3),
+                      ),
+                      _BenefitCard(
+                        icon: Icons.local_shipping_outlined,
+                        title: 'Envío Rápido',
+                        desc: 'Envío gratis +50€. Entrega en 2-3 días hábiles',
+                        color: Color(0xFFE0E7FF),
+                      ),
+                      _BenefitCard(
+                        icon: Icons.check_circle_outline,
+                        title: 'Garantía Total',
+                        desc: 'Devolución sin preguntas en 30 días garantizada',
+                        color: Color(0xFFD1FAE5),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           // ── Quick Actions ──
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 36, 16, 0),
               child: Column(
                 children: [
                   Container(
                     height: 1,
-                    color: AppColors.arenaLight.withOpacity(0.5),
+                    color: AppColors.arenaLight.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _QuickAction(
                         icon: Icons.local_shipping_outlined,
-                        label: 'Rastrear\npedido',
+                        label: 'Rastrear Pedido',
                         color: const Color(0xFFE0E7FF),
                         iconColor: const Color(0xFF6366F1),
                         onTap: () => context.push('/rastreo'),
@@ -391,7 +534,7 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(width: 12),
                       _QuickAction(
                         icon: Icons.assignment_return_outlined,
-                        label: 'Devolu-\nciones',
+                        label: 'Devoluciones',
                         color: const Color(0xFFFFEDD5),
                         iconColor: const Color(0xFFF97316),
                         onTap: () => context.push('/mis-pedidos'),
@@ -414,7 +557,131 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Newsletter Section ──
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(0, 36, 0, 0),
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+              color: AppColors.arena,
+              child: Column(
+                children: [
+                  const Text(
+                    'Suscríbete a Nuestro Newsletter',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'PlayfairDisplay',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Recibe ofertas exclusivas y un 10% de descuento en tu primera compra',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withValues(alpha: 0.85),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 48,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Tu email...',
+                            style: TextStyle(
+                              color: AppColors.textSecondary
+                                  .withValues(alpha: 0.5),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () => context.push('/contacto'),
+                        child: Container(
+                          height: 48,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: AppColors.textPrimary,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'Suscribirse',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Social Links ──
+          SliverToBoxAdapter(
+            child: Container(
+              color: AppColors.arenaPale,
+              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+              child: Column(
+                children: [
+                  const Text(
+                    'Síguenos en Redes',
+                    style: TextStyle(
+                      fontFamily: 'PlayfairDisplay',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Únete a nuestra comunidad y descubre las últimas tendencias',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _SocialButton(
+                        icon: Icons.camera_alt_rounded,
+                        label: '@by__arena',
+                        gradient: const [Color(0xFF833AB4), Color(0xFFE1306C)],
+                        url: 'https://instagram.com/by__arena',
+                      ),
+                      const SizedBox(width: 12),
+                      _SocialButton(
+                        icon: Icons.music_note_rounded,
+                        label: '@by__arena',
+                        gradient: const [Color(0xFF000000), Color(0xFF333333)],
+                        url: 'https://tiktok.com/@by__arena',
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -428,6 +695,157 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
+// ── Section header ──
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+
+  const _SectionHeader({required this.title, this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 4,
+              height: 22,
+              decoration: BoxDecoration(
+                color: AppColors.gold,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'PlayfairDisplay',
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            subtitle!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+// ── CTA Button ──
+class _CtaButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final bool filled;
+
+  const _CtaButton({
+    required this.label,
+    required this.onTap,
+    required this.filled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: filled ? AppColors.arena : Colors.transparent,
+          border: Border.all(
+            color: AppColors.arena,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: filled
+              ? [
+                  BoxShadow(
+                    color: AppColors.arena.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  )
+                ]
+              : null,
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: filled ? Colors.white : AppColors.arena,
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Benefit Card ──
+class _BenefitCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String desc;
+  final Color color;
+
+  const _BenefitCard({
+    required this.icon,
+    required this.title,
+    required this.desc,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: AppColors.arena, size: 30),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            desc,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.textSecondary,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Quick Action (fixed alignment) ──
 class _QuickAction extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -451,7 +869,8 @@ class _QuickAction extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(14),
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.circular(16),
@@ -459,13 +878,63 @@ class _QuickAction extends StatelessWidget {
               child: Icon(icon, color: iconColor, size: 24),
             ),
             const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, height: 1.2),
+            SizedBox(
+              height: 32,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  height: 1.2,
+                ),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Social Button ──
+class _SocialButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final List<Color> gradient;
+  final String url;
+
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.gradient,
+    required this.url,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: gradient),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ],
       ),
     );
   }

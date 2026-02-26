@@ -8,7 +8,8 @@ class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
 
   @override
-  ConsumerState<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+  ConsumerState<AdminDashboardScreen> createState() =>
+      _AdminDashboardScreenState();
 }
 
 class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
@@ -62,7 +63,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.arena))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.arena))
           : RefreshIndicator(
               onRefresh: _loadStats,
               child: ListView(
@@ -71,22 +73,36 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   // Stats cards
                   Row(
                     children: [
-                      _StatCard(icon: Icons.shopping_bag, label: 'Pedidos', value: '$_ordersCount', color: AppColors.arena),
+                      _StatCard(
+                          icon: Icons.shopping_bag,
+                          label: 'Pedidos',
+                          value: '$_ordersCount',
+                          color: AppColors.arena),
                       const SizedBox(width: 12),
-                      _StatCard(icon: Icons.inventory_2, label: 'Productos', value: '$_productsCount', color: AppColors.gold),
+                      _StatCard(
+                          icon: Icons.inventory_2,
+                          label: 'Productos',
+                          value: '$_productsCount',
+                          color: AppColors.gold),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _StatCard(icon: Icons.assignment_return, label: 'Devoluciones', value: '$_returnsCount', color: AppColors.warning),
+                      _StatCard(
+                          icon: Icons.assignment_return,
+                          label: 'Devoluciones',
+                          value: '$_returnsCount',
+                          color: AppColors.warning),
                       const SizedBox(width: 12),
                       const Expanded(child: SizedBox()),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  const Text('Gestión', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                  const Text('Gestión',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
 
                   _AdminMenuTile(
@@ -114,22 +130,16 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     onTap: () => context.push('/admin-returns'),
                   ),
                   _AdminMenuTile(
-                    icon: Icons.receipt_long_outlined,
-                    title: 'Facturas',
-                    subtitle: 'Ver, descargar y generar facturas',
-                    onTap: () => context.push('/admin-invoices'),
+                    icon: Icons.bar_chart_outlined,
+                    title: 'Dashboard',
+                    subtitle: 'Analíticas, ventas y gráfico semanal',
+                    onTap: () => context.push('/admin-analytics'),
                   ),
                   _AdminMenuTile(
                     icon: Icons.local_offer_outlined,
                     title: 'Códigos de Descuento',
                     subtitle: 'Crear y gestionar descuentos',
                     onTap: () => context.push('/admin-discounts'),
-                  ),
-                  _AdminMenuTile(
-                    icon: Icons.auto_awesome_outlined,
-                    title: 'Cupones Automáticos',
-                    subtitle: 'Reglas de cupones por nivel de gasto',
-                    onTap: () => context.push('/admin-auto-coupons'),
                   ),
                   _AdminMenuTile(
                     icon: Icons.article_outlined,
@@ -156,7 +166,11 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatCard({required this.icon, required this.label, required this.value, required this.color});
+  const _StatCard(
+      {required this.icon,
+      required this.label,
+      required this.value,
+      required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -173,9 +187,13 @@ class _StatCard extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 28),
             const SizedBox(height: 12),
-            Text(value, style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: color)),
+            Text(value,
+                style: TextStyle(
+                    fontSize: 28, fontWeight: FontWeight.w700, color: color)),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            Text(label,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 13)),
           ],
         ),
       ),
@@ -189,7 +207,11 @@ class _AdminMenuTile extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
 
-  const _AdminMenuTile({required this.icon, required this.title, required this.subtitle, required this.onTap});
+  const _AdminMenuTile(
+      {required this.icon,
+      required this.title,
+      required this.subtitle,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -205,8 +227,11 @@ class _AdminMenuTile extends StatelessWidget {
           child: Icon(icon, color: AppColors.arena),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-        trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+        subtitle: Text(subtitle,
+            style:
+                const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        trailing:
+            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
         onTap: onTap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

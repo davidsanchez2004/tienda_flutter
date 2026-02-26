@@ -34,8 +34,7 @@ import 'package:by_arena/presentation/screens/admin/admin_returns_screen.dart';
 import 'package:by_arena/presentation/screens/admin/admin_discounts_screen.dart';
 import 'package:by_arena/presentation/screens/admin/admin_blog_screen.dart';
 import 'package:by_arena/presentation/screens/admin/admin_newsletter_screen.dart';
-import 'package:by_arena/presentation/screens/admin/admin_invoices_screen.dart';
-import 'package:by_arena/presentation/screens/admin/admin_auto_coupons_screen.dart';
+import 'package:by_arena/presentation/screens/admin/admin_analytics_screen.dart';
 import 'package:by_arena/presentation/screens/profile/edit_profile_screen.dart';
 import 'package:by_arena/presentation/screens/wishlist/wishlist_screen.dart';
 
@@ -244,14 +243,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AdminDiscountsScreen(),
       ),
       GoRoute(
-        path: '/admin-invoices',
+        path: '/admin-analytics',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const AdminInvoicesScreen(),
-      ),
-      GoRoute(
-        path: '/admin-auto-coupons',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const AdminAutoCouponsScreen(),
+        builder: (context, state) => const AdminAnalyticsScreen(),
       ),
       GoRoute(
         path: '/admin-blog',

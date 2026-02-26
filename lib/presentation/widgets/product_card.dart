@@ -14,6 +14,10 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasDiscount = product.onOffer && product.offerPrice != null;
+    final discountPct = hasDiscount
+        ? (product.offerPercentage?.toInt() ??
+            ((1 - product.offerPrice! / product.price) * 100).toInt())
+        : 0;
 
     return GestureDetector(
       onTap: onTap,
@@ -21,10 +25,12 @@ class ProductCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
+          border:
+              Border.all(color: AppColors.arenaLight.withValues(alpha: 0.6)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
@@ -33,93 +39,86 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
+            // ── Image ──
             Expanded(
               flex: 3,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: product.imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: AppColors.arenaPale,
-                      highlightColor: AppColors.white,
-                      child: Container(color: AppColors.arenaPale),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: AppColors.arenaPale,
-                      child: const Icon(Icons.image_not_supported_outlined, color: AppColors.arena),
-                    ),
-                  ),
-                  // Gradient overlay at bottom for text readability
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 30,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Colors.white.withOpacity(0.3)],
+                  Hero(
+                    tag: 'product-${product.id}',
+                    child: CachedNetworkImage(
+                      imageUrl: product.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: AppColors.arenaPale,
+                        highlightColor: AppColors.white,
+                        child: Container(color: AppColors.arenaPale),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.arenaPale,
+                        child: const Center(
+                          child: Icon(Icons.image_not_supported_outlined,
+                              color: AppColors.arena, size: 28),
                         ),
                       ),
                     ),
                   ),
+                  // Discount badge
                   if (hasDiscount)
                     Positioned(
                       top: 8,
                       left: 8,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
-                          ),
+                          color: const Color(0xFFDC2626),
                           borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.red.withOpacity(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
                         ),
                         child: Text(
-                          '-${product.offerPercentage?.toInt() ?? ((1 - product.offerPrice! / product.price) * 100).toInt()}%',
-                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                          '-$discountPct%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
+                  // Low stock
                   if (product.stock > 0 && product.stock <= 3)
                     Positioned(
                       top: 8,
                       right: 8,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.orange.shade600,
+                          color: Colors.orange.shade700,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           '¡Quedan ${product.stock}!',
-                          style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
+                  // Out of stock overlay
                   if (product.stock <= 0)
                     Positioned.fill(
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                        ),
+                        color: Colors.black.withValues(alpha: 0.45),
                         alignment: Alignment.center,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
@@ -137,7 +136,7 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Info
+            // ── Info ──
             Expanded(
               flex: 2,
               child: Padding(
@@ -151,24 +150,24 @@ class ProductCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                         height: 1.2,
                       ),
                     ),
                     const Spacer(),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '${product.effectivePrice.toStringAsFixed(2)}${AppConfig.currency}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: hasDiscount ? const Color(0xFFDC2626) : AppColors.textPrimary,
+                    if (hasDiscount)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${product.effectivePrice.toStringAsFixed(2)}${AppConfig.currency}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFFDC2626),
+                            ),
                           ),
-                        ),
-                        if (hasDiscount) ...[
                           const SizedBox(width: 6),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 1),
@@ -177,14 +176,23 @@ class ProductCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 decoration: TextDecoration.lineThrough,
-                                decorationColor: AppColors.textSecondary.withOpacity(0.5),
+                                decorationColor: AppColors.textSecondary
+                                    .withValues(alpha: 0.5),
                                 color: AppColors.textSecondary,
                               ),
                             ),
                           ),
                         ],
-                      ],
-                    ),
+                      )
+                    else
+                      Text(
+                        '${product.effectivePrice.toStringAsFixed(2)}${AppConfig.currency}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                   ],
                 ),
               ),

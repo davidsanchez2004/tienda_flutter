@@ -16,6 +16,7 @@ class ProductRepository {
   Future<List<Product>> getProducts({
     String? categoryId,
     bool? featured,
+    bool? onOffer,
     int limit = 50,
     int offset = 0,
   }) async {
@@ -26,6 +27,7 @@ class ProductRepository {
       };
       if (categoryId != null) params['categoria'] = categoryId;
       if (featured == true) params['destacados'] = 'true';
+      if (onOffer == true) params['oferta'] = 'true';
 
       final response = await _dio.get('/products', queryParameters: params);
       final data = response.data;
@@ -79,7 +81,8 @@ class ProductRepository {
       if (maxPrice != null) params['precio_max'] = maxPrice.toString();
       if (onOffer == true) params['oferta'] = 'true';
 
-      final response = await _dio.get('/products/search', queryParameters: params);
+      final response =
+          await _dio.get('/products/search', queryParameters: params);
       final list = (response.data['products'] as List?) ?? [];
       return list.map((json) => Product.fromJson(json)).toList();
     } on DioException catch (e) {
@@ -87,9 +90,11 @@ class ProductRepository {
     }
   }
 
-  Future<Map<String, dynamic>> validateStock(List<Map<String, dynamic>> items) async {
+  Future<Map<String, dynamic>> validateStock(
+      List<Map<String, dynamic>> items) async {
     try {
-      final response = await _dio.post('/products/stock', data: {'items': items});
+      final response =
+          await _dio.post('/products/stock', data: {'items': items});
       return response.data;
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
