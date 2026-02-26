@@ -31,7 +31,11 @@ class ProfileScreen extends ConsumerWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFFD4C5B9), Color(0xFFE8DDD3), Color(0xFFF5EFE6)],
+                    colors: [
+                      Color(0xFFD4C5B9),
+                      Color(0xFFE8DDD3),
+                      Color(0xFFF5EFE6)
+                    ],
                   ),
                 ),
                 child: Stack(
@@ -57,7 +61,9 @@ class ProfileScreen extends ConsumerWidget {
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
+                              border: Border.all(
+                                  color: Colors.white.withOpacity(0.6),
+                                  width: 2),
                             ),
                             child: CircleAvatar(
                               radius: 36,
@@ -76,7 +82,9 @@ class ProfileScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            user.fullName.isNotEmpty ? user.fullName : user.email,
+                            user.fullName.isNotEmpty
+                                ? user.fullName
+                                : user.email,
                             style: const TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.w700,
@@ -107,8 +115,22 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Mi Cuenta',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
+
+                  _ProfileTile(
+                    icon: Icons.edit_outlined,
+                    title: 'Editar Perfil',
+                    subtitle: 'Nombre, teléfono',
+                    onTap: () => context.push('/editar-perfil'),
+                  ),
+                  _ProfileTile(
+                    icon: Icons.favorite_border,
+                    title: 'Mis Favoritos',
+                    subtitle: 'Productos guardados',
+                    onTap: () => context.push('/favoritos'),
+                  ),
 
                   // Admin panel option - only visible for admin users
                   if (user.role == 'admin')
@@ -152,7 +174,8 @@ class ProfileScreen extends ConsumerWidget {
 
                   const SizedBox(height: 24),
                   const Text('Información',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
 
                   _ProfileTile(
@@ -170,7 +193,8 @@ class ProfileScreen extends ConsumerWidget {
 
                   const SizedBox(height: 24),
                   const Text('Soporte',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
 
                   _ProfileTile(
@@ -188,7 +212,8 @@ class ProfileScreen extends ConsumerWidget {
 
                   const SizedBox(height: 24),
                   const Text('Legal',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
 
                   _ProfileTile(
@@ -223,7 +248,8 @@ class ProfileScreen extends ConsumerWidget {
                           context: context,
                           builder: (ctx) => AlertDialog(
                             title: const Text('Cerrar sesión'),
-                            content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+                            content: const Text(
+                                '¿Estás seguro de que quieres cerrar sesión?'),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx, false),
@@ -256,7 +282,8 @@ class ProfileScreen extends ConsumerWidget {
                   const Center(
                     child: Text(
                       'BY ARENA v1.0.0',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(
+                          fontSize: 12, color: AppColors.textSecondary),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -294,7 +321,8 @@ class ProfileScreen extends ConsumerWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.arenaLight, width: 2),
                     ),
-                    child: const Icon(Icons.person_outline_rounded, size: 48, color: AppColors.arena),
+                    child: const Icon(Icons.person_outline_rounded,
+                        size: 48, color: AppColors.arena),
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -309,7 +337,10 @@ class ProfileScreen extends ConsumerWidget {
                   const Text(
                     'Inicia sesión para gestionar tus pedidos,\ndirecciones y mucho más',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
+                    style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                        height: 1.4),
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
@@ -320,7 +351,9 @@ class ProfileScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    child: const Text('Iniciar Sesión',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton(
@@ -331,7 +364,9 @@ class ProfileScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Crear Cuenta', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    child: const Text('Crear Cuenta',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
@@ -362,7 +397,9 @@ class _ProfileTile extends StatelessWidget {
       leading: Icon(icon, color: AppColors.arena),
       title: Text(title),
       subtitle: subtitle != null
-          ? Text(subtitle!, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary))
+          ? Text(subtitle!,
+              style:
+                  const TextStyle(fontSize: 13, color: AppColors.textSecondary))
           : null,
       trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
       onTap: onTap,

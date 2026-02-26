@@ -25,7 +25,8 @@ class AuthRepository {
       await _storage.saveTokens(session.accessToken, session.refreshToken);
 
       final user = User.fromJson(response.data['user']);
-      await _storage.saveUser(id: user.id, email: user.email, name: user.fullName);
+      await _storage.saveUser(
+          id: user.id, email: user.email, name: user.fullName);
 
       return user;
     } on DioException catch (e) {
@@ -54,7 +55,8 @@ class AuthRepository {
       }
 
       final user = User.fromJson(response.data['user']);
-      await _storage.saveUser(id: user.id, email: user.email, name: user.fullName);
+      await _storage.saveUser(
+          id: user.id, email: user.email, name: user.fullName);
 
       return user;
     } on DioException catch (e) {
@@ -89,8 +91,25 @@ class AuthRepository {
     }
   }
 
+  /// Update user profile (name, phone)
+  Future<User> updateProfile({required String fullName, String? phone}) async {
+    try {
+      final response = await _dio.put('/auth/update-profile', data: {
+        'full_name': fullName,
+        if (phone != null) 'phone': phone,
+      });
+      final user = User.fromJson(response.data['user']);
+      await _storage.saveUser(
+          id: user.id, email: user.email, name: user.fullName);
+      return user;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
   /// After registration, claim guest orders matching this email
-  Future<int> claimGuestOrders({required String userId, required String email}) async {
+  Future<int> claimGuestOrders(
+      {required String userId, required String email}) async {
     try {
       final response = await _dio.post('/orders/claim-guest-orders', data: {
         'userId': userId,

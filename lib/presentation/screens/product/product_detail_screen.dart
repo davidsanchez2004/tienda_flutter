@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/core/config/app_config.dart';
 import 'package:by_arena/presentation/providers/product_provider.dart';
 import 'package:by_arena/presentation/providers/cart_provider.dart';
+import 'package:by_arena/presentation/providers/auth_provider.dart';
+import 'package:by_arena/presentation/providers/wishlist_provider.dart';
 import 'package:by_arena/presentation/widgets/shared_widgets.dart';
 import 'package:by_arena/presentation/widgets/cart_icon_badge.dart';
 import 'package:by_arena/domain/models/cart_item.dart';
@@ -15,7 +18,8 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
   const ProductDetailScreen({super.key, required this.productId});
 
   @override
-  ConsumerState<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
@@ -49,20 +53,75 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),
-                actions: const [
-                  CartIconBadge(),
+                actions: [
+                  // Wishlist button
+                  Builder(builder: (ctx) {
+                    final isAuth = ref.watch(authProvider).status ==
+                        AuthStatus.authenticated;
+                    final isWished = isAuth
+                        ? ref.watch(isInWishlistProvider(product.id))
+                        : false;
+                    return IconButton(
+                      icon: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isWished ? Icons.favorite : Icons.favorite_border,
+                          size: 20,
+                          color: isWished
+                              ? AppColors.error
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                      onPressed: () {
+                        if (!isAuth) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Inicia sesión para añadir a favoritos'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                        ref.read(wishlistProvider.notifier).toggle(product.id);
+                      },
+                    );
+                  }),
+                  // Share button
+                  IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.share, size: 20),
+                    ),
+                    onPressed: () {
+                      Share.share(
+                          '¡Mira ${product.name} en BY ARENA! ${AppConfig.siteBaseUrl}/producto/${product.id}');
+                    },
+                  ),
+                  const CartIconBadge(),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
                   background: PageView.builder(
-                    onPageChanged: (index) => setState(() => _selectedImageIndex = index),
+                    onPageChanged: (index) =>
+                        setState(() => _selectedImageIndex = index),
                     itemCount: images.length,
                     itemBuilder: (context, index) => CachedNetworkImage(
                       imageUrl: images[index],
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: AppColors.arenaPale),
+                      placeholder: (_, __) =>
+                          Container(color: AppColors.arenaPale),
                       errorWidget: (_, __, ___) => Container(
                         color: AppColors.arenaPale,
-                        child: const Icon(Icons.image_not_supported, size: 48, color: AppColors.arena),
+                        child: const Icon(Icons.image_not_supported,
+                            size: 48, color: AppColors.arena),
                       ),
                     ),
                   ),
@@ -79,15 +138,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       if (images.length > 1)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(images.length, (i) => Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 3),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: i == _selectedImageIndex ? AppColors.arena : AppColors.arenaLight,
-                            ),
-                          )),
+                          children: List.generate(
+                              images.length,
+                              (i) => Container(
+                                    width: 8,
+                                    height: 8,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 3),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: i == _selectedImageIndex
+                                          ? AppColors.arena
+                                          : AppColors.arenaLight,
+                                    ),
+                                  )),
                         ),
                       const SizedBox(height: 16),
 
@@ -111,7 +175,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
-                              color: hasDiscount ? AppColors.error : AppColors.textPrimary,
+                              color: hasDiscount
+                                  ? AppColors.error
+                                  : AppColors.textPrimary,
                             ),
                           ),
                           if (hasDiscount) ...[
@@ -133,19 +199,27 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       Row(
                         children: [
                           Icon(
-                            product.isAvailable ? Icons.check_circle : Icons.cancel,
+                            product.isAvailable
+                                ? Icons.check_circle
+                                : Icons.cancel,
                             size: 16,
-                            color: product.isAvailable ? AppColors.success : AppColors.error,
+                            color: product.isAvailable
+                                ? AppColors.success
+                                : AppColors.error,
                           ),
                           const SizedBox(width: 6),
                           Text(
                             product.isAvailable
-                                ? (product.stock <= 5 ? '¡Últimas ${product.stock} unidades!' : 'En stock')
+                                ? (product.stock <= 5
+                                    ? '¡Últimas ${product.stock} unidades!'
+                                    : 'En stock')
                                 : 'Agotado',
                             style: TextStyle(
                               fontSize: 13,
                               color: product.isAvailable
-                                  ? (product.stock <= 5 ? AppColors.warning : AppColors.success)
+                                  ? (product.stock <= 5
+                                      ? AppColors.warning
+                                      : AppColors.success)
                                   : AppColors.error,
                               fontWeight: FontWeight.w500,
                             ),
@@ -169,8 +243,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       if (product.isAvailable) ...[
                         Builder(builder: (context) {
                           final cartItems = ref.watch(cartProvider);
-                          final inCart = cartItems.where((i) => i.productId == product.id).fold(0, (sum, i) => sum + i.quantity);
-                          final availableToAdd = (product.stock - inCart).clamp(0, product.stock);
+                          final inCart = cartItems
+                              .where((i) => i.productId == product.id)
+                              .fold(0, (sum, i) => sum + i.quantity);
+                          final availableToAdd =
+                              (product.stock - inCart).clamp(0, product.stock);
 
                           if (availableToAdd <= 0 && inCart > 0) {
                             return Container(
@@ -178,18 +255,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               decoration: BoxDecoration(
                                 color: AppColors.warning.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                                border: Border.all(
+                                    color: AppColors.warning
+                                        .withValues(alpha: 0.3)),
                               ),
                               child: Column(
                                 children: [
                                   Text(
                                     'Has alcanzado el máximo disponible',
-                                    style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.warning),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.warning),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'Tienes $inCart de ${product.stock} en el carrito',
-                                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.textSecondary),
                                   ),
                                 ],
                               ),
@@ -204,33 +287,44 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   padding: const EdgeInsets.only(bottom: 8),
                                   child: Text(
                                     'Ya tienes $inCart en el carrito',
-                                    style: const TextStyle(fontSize: 12, color: AppColors.warning),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: AppColors.warning),
                                   ),
                                 ),
-                              const Text('Cantidad', style: TextStyle(fontWeight: FontWeight.w600)),
+                              const Text('Cantidad',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w600)),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
                                   _QtyButton(
                                     icon: Icons.remove,
                                     onTap: () {
-                                      if (_quantity > 1) setState(() => _quantity--);
+                                      if (_quantity > 1)
+                                        setState(() => _quantity--);
                                     },
                                   ),
                                   Container(
                                     width: 48,
                                     alignment: Alignment.center,
-                                    child: Text('$_quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                                    child: Text('$_quantity',
+                                        style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)),
                                   ),
                                   _QtyButton(
                                     icon: Icons.add,
                                     enabled: _quantity < availableToAdd,
                                     onTap: () {
-                                      if (_quantity < availableToAdd) setState(() => _quantity++);
+                                      if (_quantity < availableToAdd)
+                                        setState(() => _quantity++);
                                     },
                                   ),
                                   const SizedBox(width: 12),
-                                  Text('Máx. $availableToAdd', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                  Text('Máx. $availableToAdd',
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.textSecondary)),
                                 ],
                               ),
                               const SizedBox(height: 20),
@@ -241,26 +335,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 child: ElevatedButton.icon(
                                   onPressed: availableToAdd > 0
                                       ? () {
-                                          ref.read(cartProvider.notifier).addItem(
-                                            CartItem(
-                                              productId: product.id,
-                                              name: product.name,
-                                              imageUrl: product.imageUrl,
-                                              quantity: _quantity,
-                                              price: product.effectivePrice,
-                                              stock: product.stock,
-                                            ),
-                                          );
+                                          ref
+                                              .read(cartProvider.notifier)
+                                              .addItem(
+                                                CartItem(
+                                                  productId: product.id,
+                                                  name: product.name,
+                                                  imageUrl: product.imageUrl,
+                                                  quantity: _quantity,
+                                                  price: product.effectivePrice,
+                                                  stock: product.stock,
+                                                ),
+                                              );
                                           setState(() => _quantity = 1);
-                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
                                             SnackBar(
-                                              content: Text('${product.name} añadido al carrito'),
+                                              content: Text(
+                                                  '${product.name} añadido al carrito'),
                                               backgroundColor: AppColors.arena,
-                                              behavior: SnackBarBehavior.floating,
+                                              behavior:
+                                                  SnackBarBehavior.floating,
                                               action: SnackBarAction(
                                                 label: 'Ver carrito',
                                                 textColor: Colors.white,
-                                                onPressed: () => context.go('/carrito'),
+                                                onPressed: () =>
+                                                    context.go('/carrito'),
                                               ),
                                             ),
                                           );
@@ -282,10 +382,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.arena)),
+        loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.arena)),
         error: (error, _) => ErrorDisplay(
           message: error.toString(),
-          onRetry: () => ref.invalidate(productDetailProvider(widget.productId)),
+          onRetry: () =>
+              ref.invalidate(productDetailProvider(widget.productId)),
         ),
       ),
     );
@@ -296,7 +398,8 @@ class _QtyButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool enabled;
-  const _QtyButton({required this.icon, required this.onTap, this.enabled = true});
+  const _QtyButton(
+      {required this.icon, required this.onTap, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {

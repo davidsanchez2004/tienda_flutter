@@ -36,6 +36,8 @@ import 'package:by_arena/presentation/screens/admin/admin_blog_screen.dart';
 import 'package:by_arena/presentation/screens/admin/admin_newsletter_screen.dart';
 import 'package:by_arena/presentation/screens/admin/admin_invoices_screen.dart';
 import 'package:by_arena/presentation/screens/admin/admin_auto_coupons_screen.dart';
+import 'package:by_arena/presentation/screens/profile/edit_profile_screen.dart';
+import 'package:by_arena/presentation/screens/wishlist/wishlist_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -194,6 +196,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/mis-direcciones',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AddressManagementScreen(),
+      ),
+      GoRoute(
+        path: '/editar-perfil',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/favoritos',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WishlistScreen(),
       ),
       // Admin routes
       GoRoute(
