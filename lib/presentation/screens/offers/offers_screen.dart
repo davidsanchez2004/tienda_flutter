@@ -10,7 +10,11 @@ import 'package:by_arena/presentation/widgets/shared_widgets.dart';
 
 final offersProvider = FutureProvider<List<Product>>((ref) async {
   final repo = ref.read(productRepositoryProvider);
-  return repo.getProducts(onOffer: true, limit: 100);
+  final products = await repo.getProducts(onOffer: true, limit: 100);
+  // Filtrar solo productos que realmente tienen precio de oferta
+  return products
+      .where((p) => p.offerPrice != null && p.offerPrice! < p.price)
+      .toList();
 });
 
 class OffersScreen extends ConsumerWidget {
