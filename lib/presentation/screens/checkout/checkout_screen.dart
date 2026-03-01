@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/core/config/app_config.dart';
@@ -74,7 +75,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Código aplicado correctamente'), backgroundColor: AppColors.success),
+            const SnackBar(
+                content: Text('Código aplicado correctamente'),
+                backgroundColor: AppColors.success),
           );
         }
       } else {
@@ -91,15 +94,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     // Validate stock first
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       final cartItems = ref.read(cartProvider);
       final productRepo = ref.read(productRepositoryProvider);
 
-      final stockItems = cartItems.map((i) => {
-        'product_id': i.productId,
-        'quantity': i.quantity,
-      }).toList();
+      final stockItems = cartItems
+          .map((i) => {
+                'product_id': i.productId,
+                'quantity': i.quantity,
+              })
+          .toList();
 
       final stockResult = await productRepo.validateStock(stockItems);
       if (stockResult['valid'] != true) {
@@ -141,8 +149,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       if (url != null) {
         final uri = Uri.parse(url);
         if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          // Clear cart and navigate to success BEFORE launching browser
           ref.read(cartProvider.notifier).clear();
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          if (mounted) {
+            context.go('/checkout-exitoso');
+          }
         }
       }
     } catch (e) {
@@ -166,7 +178,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             // Customer info
-            const Text('Datos de contacto', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text('Datos de contacto',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             TextFormField(
               controller: _nameCtrl,
@@ -191,10 +204,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             const SizedBox(height: 24),
 
             // Shipping method
-            const Text('Método de envío', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text('Método de envío',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             RadioListTile<String>(
-              title: Text('Envío a domicilio (${shipping > 0 ? "${shipping.toStringAsFixed(2)}${AppConfig.currency}" : "GRATIS"})'),
+              title: Text(
+                  'Envío a domicilio (${shipping > 0 ? "${shipping.toStringAsFixed(2)}${AppConfig.currency}" : "GRATIS"})'),
               value: 'delivery',
               groupValue: _shippingMethod,
               activeColor: AppColors.arena,
@@ -213,7 +228,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               TextFormField(
                 controller: _addressCtrl,
                 decoration: const InputDecoration(labelText: 'Dirección'),
-                validator: (v) => _shippingMethod == 'delivery' && v!.isEmpty ? 'Requerido' : null,
+                validator: (v) => _shippingMethod == 'delivery' && v!.isEmpty
+                    ? 'Requerido'
+                    : null,
               ),
               const SizedBox(height: 12),
               Row(
@@ -222,16 +239,23 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     child: TextFormField(
                       controller: _cityCtrl,
                       decoration: const InputDecoration(labelText: 'Ciudad'),
-                      validator: (v) => _shippingMethod == 'delivery' && v!.isEmpty ? 'Requerido' : null,
+                      validator: (v) =>
+                          _shippingMethod == 'delivery' && v!.isEmpty
+                              ? 'Requerido'
+                              : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _postalCtrl,
-                      decoration: const InputDecoration(labelText: 'Código Postal'),
+                      decoration:
+                          const InputDecoration(labelText: 'Código Postal'),
                       keyboardType: TextInputType.number,
-                      validator: (v) => _shippingMethod == 'delivery' && v!.isEmpty ? 'Requerido' : null,
+                      validator: (v) =>
+                          _shippingMethod == 'delivery' && v!.isEmpty
+                              ? 'Requerido'
+                              : null,
                     ),
                   ),
                 ],
@@ -241,7 +265,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             const SizedBox(height: 24),
 
             // Discount code
-            const Text('Código de descuento', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text('Código de descuento',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -254,15 +279,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: _appliedDiscount == null && !_isLoading ? _validateDiscount : null,
-                  child: Text(_appliedDiscount != null ? 'Aplicado ✓' : 'Aplicar'),
+                  onPressed: _appliedDiscount == null && !_isLoading
+                      ? _validateDiscount
+                      : null,
+                  child:
+                      Text(_appliedDiscount != null ? 'Aplicado ✓' : 'Aplicar'),
                 ),
               ],
             ),
 
             if (_errorMessage != null) ...[
               const SizedBox(height: 12),
-              Text(_errorMessage!, style: const TextStyle(color: AppColors.error)),
+              Text(_errorMessage!,
+                  style: const TextStyle(color: AppColors.error)),
             ],
 
             const SizedBox(height: 24),
@@ -276,15 +305,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               child: Column(
                 children: [
-                  _Row('Subtotal', '${subtotal.toStringAsFixed(2)}${AppConfig.currency}'),
+                  _Row('Subtotal',
+                      '${subtotal.toStringAsFixed(2)}${AppConfig.currency}'),
                   if (_discountAmount > 0)
-                    _Row('Descuento', '-${_discountAmount.toStringAsFixed(2)}${AppConfig.currency}',
+                    _Row('Descuento',
+                        '-${_discountAmount.toStringAsFixed(2)}${AppConfig.currency}',
                         color: AppColors.success),
-                  _Row('Envío', shipping == 0
-                      ? 'GRATIS'
-                      : '${shipping.toStringAsFixed(2)}${AppConfig.currency}'),
+                  _Row(
+                      'Envío',
+                      shipping == 0
+                          ? 'GRATIS'
+                          : '${shipping.toStringAsFixed(2)}${AppConfig.currency}'),
                   const Divider(),
-                  _Row('Total', '${total.toStringAsFixed(2)}${AppConfig.currency}', bold: true),
+                  _Row('Total',
+                      '${total.toStringAsFixed(2)}${AppConfig.currency}',
+                      bold: true),
                 ],
               ),
             ),
@@ -296,8 +331,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _processCheckout,
                 child: _isLoading
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Text('Pagar con Stripe', style: TextStyle(fontSize: 16)),
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : const Text('Pagar con Stripe',
+                        style: TextStyle(fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
@@ -322,12 +362,16 @@ class _Row extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontWeight: bold ? FontWeight.w700 : FontWeight.w400, fontSize: bold ? 16 : 14)),
-          Text(value, style: TextStyle(
-            fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
-            fontSize: bold ? 16 : 14,
-            color: color,
-          )),
+          Text(label,
+              style: TextStyle(
+                  fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+                  fontSize: bold ? 16 : 14)),
+          Text(value,
+              style: TextStyle(
+                fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+                fontSize: bold ? 16 : 14,
+                color: color,
+              )),
         ],
       ),
     );

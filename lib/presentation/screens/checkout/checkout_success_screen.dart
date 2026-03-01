@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:by_arena/core/theme/app_theme.dart';
 import 'package:by_arena/presentation/providers/cart_provider.dart';
 import 'package:by_arena/core/config/app_config.dart';
@@ -36,8 +37,8 @@ class CheckoutSuccessScreen extends ConsumerWidget {
               Text(
                 '¡Gracias por tu compra!',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
@@ -49,7 +50,7 @@ class CheckoutSuccessScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
-                onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
+                onPressed: () => context.go('/mis-pedidos'),
                 icon: const Icon(Icons.shopping_bag_outlined),
                 label: const Text('Mis Pedidos'),
                 style: ElevatedButton.styleFrom(
@@ -58,7 +59,7 @@ class CheckoutSuccessScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               OutlinedButton(
-                onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
+                onPressed: () => context.go('/'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(220, 48),
                 ),
@@ -68,11 +69,13 @@ class CheckoutSuccessScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.support_agent, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.support_agent,
+                      size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 6),
                   Text(
                     '¿Dudas? Escríbenos por WhatsApp al ${AppConfig.whatsappNumber}',
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: const TextStyle(
+                        fontSize: 12, color: AppColors.textSecondary),
                   ),
                 ],
               ),
